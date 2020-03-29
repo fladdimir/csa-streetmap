@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  # 0. start sonarqube server
+  # docker-compose up sonarqube
+  sonarqube:
+    image: sonarqube:latest
+    ports:
+      - 9000:9000
+
+  # 1. run tests
+  # use "docker-compose build" to rebuild the image in case of requirements.txt changes
+  # docker-compose up test
+  # docker-compose up --renew-anon-volumes test
+  # (second command avoids reusing potentially created cache)
+  test:
+    build: ./
+    volumes:
+      - .:/usr/src
+      - /usr/src/main/geo/cache/
+    command: "pytest --cov-report xml --cov-report term --cov=main/ tests"
+
+  # then: 2. run analysis (and parse coverage report from the test)
+  analysis:
+    # docker-compose up analysis
+    image: newtmitch/sonar-scanner:latest
+    volumes:
+      - .:/usr/src
+
+  # docker-compose up process-web-animation
+  process-web-animation:
+    build: ./
+    volumes:
+      - .:/usr/src
+    ports:
+      - "5000:5000"
+    command: "python3 ./exec/process_web_animation.py"
+
+  # docker-compose up geo-web-animation
+  geo-web-animation:
+    build: ./
+    volumes:
+      - .:/usr/src
+    ports:
+      - "5000:5000"
+    command: "python3 ./exec/geo_web_animation.py"

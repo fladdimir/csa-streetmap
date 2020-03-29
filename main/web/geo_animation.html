@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Casymda Geo Animation</title>
+
+    <link rel="stylesheet" href="files?filepath=main/web/3pl/bootstrap.min.css">
+    <link rel="stylesheet" href="files?filepath=main/web/3pl/leaflet.css">
+
+    <script src="files?filepath=main/web/3pl/leaflet.js"></script>
+    <script src="files?filepath=main/web/3pl/leaflet.rotatedMarker.js"></script>
+    <script src="files?filepath=main/web/animation/geo_animation.js"></script>
+    <script src="files?filepath=main/web/animation/animation_client.js"></script>
+
+    <style>
+        #map {
+            width: 1000px;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <hr>
+        <div class="row">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn" onclick=start_simulation()>&#9658</button>
+                <button type="button" class="btn btn-default btn" onclick=pause_simulation()>&#10073&#10073</button>
+                <button type="button" class="btn btn-default btn" onclick=resume_simulation()>&#x3e</button>
+                <button type="button" class="btn btn-default btn" onclick=stop_simulation()>&#9726</button>
+            </div>
+            <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="1" class="slider" id="speed_slider">
+                <p>real-time factor: <span id="speed_label"></span></p>
+                <script>
+                    var speed_slider = document.getElementById("speed_slider");
+                    var speed_label = document.getElementById("speed_label");
+                    function change_factor(value) {
+                        speed_label.innerHTML = (1 / speed_slider_changed_to(value)).toFixed(2);
+                    }
+                    change_factor(speed_slider.value);
+                    speed_slider.oninput = function () {
+                        change_factor(this.value);
+                    }
+                </script>
+            </div>
+            <hr>
+            <div id="map">
+                <!-- animation will be placed here -->
+            </div>
+        </div>
+        <hr>
+    </div>
+</body>
+
+</html>

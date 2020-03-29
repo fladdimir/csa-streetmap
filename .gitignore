@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# ide
+.vscode
+
+# sonarqube
+.scannerwork
+
+*_temp_*

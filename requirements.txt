@@ -1,0 +1,4 @@
+casymda==0.2.19
+pytest==5.4.1
+pytest-cov==2.8.1
+osmnx==0.11.4
