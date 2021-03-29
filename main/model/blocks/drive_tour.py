@@ -1,8 +1,8 @@
+import random
 from typing import Any, List, Optional, cast
 
-from casymda.blocks.block_components import VisualizableBlock
 import simpy
-
+from casymda.blocks.block_components import VisualizableBlock
 from main.geo.base.point import Point
 from main.geo.base.segment import Segment
 from main.geo.geo_info import GeoInfo
@@ -27,7 +27,8 @@ class DriveTour(VisualizableBlock):
         ways={},
         geo_info: GeoInfo = None,
         start: str = "",
-        stops: List[str] = [],
+        stops: List[List[str]] = [[]]
+        # (list of tours, each consisting of a list of stops)
     ):
         super().__init__(env, name, block_capacity=block_capacity, xy=xy, ways=ways)
 
@@ -35,15 +36,19 @@ class DriveTour(VisualizableBlock):
             raise AssertionError("geo_info must not be None")
         self.geo_info: GeoInfo = cast(GeoInfo, geo_info)
         self.start = start
-        self.stops = stops
-        self.stops.append(start)  # always return to start
+        self.tours: List[List[str]] = []
+        for tour in stops:
+            tour.append(start)  # always return to start after every tour
+            self.tours.append(tour)
 
         self.geo_visualizer: Optional[GeoVisualizer] = None
 
     def actual_processing(self, entity: Truck):
-        truck_position = self.start
+        truck_position = self.start  # always start the start
 
-        for next_stop in self.stops:
+        tour = random.choice(self.tours)  # random tour for each truck
+
+        for next_stop in tour:
             distance = self.geo_info.get_distance(truck_position, next_stop)
             driving_time = distance / entity.speed
 
@@ -51,7 +56,7 @@ class DriveTour(VisualizableBlock):
                 entity,
                 from_node=truck_position,
                 to_node=next_stop,
-                destroy_on_arrival=(next_stop == self.stops[-1]),
+                destroy_on_arrival=(next_stop == tour[-1]),
             )  # (could be expressable using with)
             yield self.env.timeout(driving_time)  # simulate driving time
             if animation is not None:
@@ -98,7 +103,11 @@ class DriveTour(VisualizableBlock):
                 self.geo_visualizer.destroy(entity)
 
     def animate_progress(
-        self, entity: Truck, segments: List[Segment], time_spent: float, segm_idx: int,
+        self,
+        entity: Truck,
+        segments: List[Segment],
+        time_spent: float,
+        segm_idx: int,
     ) -> int:
         distance = entity.speed * time_spent
         while segments[segm_idx].length_end < distance and segm_idx < len(segments):
