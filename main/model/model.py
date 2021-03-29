@@ -24,7 +24,7 @@ class Model:
             xy=(79, 59),
             entity_type=Truck,
             max_entities=10,
-            inter_arrival_time=250,
+            inter_arrival_time=50,
             ways={"drive_tour": [(97, 59), (180, 59)]},
         )
 
@@ -36,7 +36,7 @@ class Model:
             xy=(230, 59),
             geo_info=geo_info,
             start="PAT",
-            stops=["ZFB", "MMC", "CAV"],
+            stops=[["ZFB", "MMC", "CAV"], ["CAV", "MMC", "ZFB"]],
             ways={"sink": [(280, 59), (350, 59)]},
         )
 
